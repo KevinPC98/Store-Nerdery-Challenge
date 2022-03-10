@@ -15,7 +15,7 @@ model User {
   role      String
   createdAt DateTime @default(now()) @map("created_at")
   tokens    Token[]
-  orders    Order[]
+  carts     Cart[]
   likes     Like[]
 
   @@map("users")
@@ -27,7 +27,6 @@ model Token {
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @map(name: "user_id")
   jti       String   @unique @default(uuid())
-  exp       Int?
 
   @@map(name: "tokens")
 }
@@ -42,29 +41,39 @@ model Like {
   @@map("likes")
 }
 
-model Order {
+model Contain {
   id        String  @id @default(uuid())
-  userId    String  @map("user_id")
-  user      User    @relation(fields: [userId], references: [id])
+  cartId    String  @map("cart_id")
+  cart      Cart    @relation(fields: [cartId], references: [id])
   productId String  @map("product_id")
   product   Product @relation(fields: [productId], references: [id])
-  wasBoght  Boolean @default(false) @map("was_bought")
+  quantity  Int
 
-  @@map("orders")
+  @@map("containts")
+}
+
+model Cart {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id])
+  wasBoght  Boolean   @default(false) @map("was_bought")
+  containts Contain[]
+
+  @@map("carts")
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   description String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
   category    String
   price       String
   image       String
   visible     Boolean
   stock       Int
   likes       Like[]
-  orders      Order[]
+  containts   Contain[]
 
   @@map("products")
 }
