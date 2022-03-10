@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Unauthorized } from 'http-errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { compareSync } from 'bcryptjs';
 import { sign, verify } from 'jsonwebtoken';
@@ -66,7 +65,7 @@ export class AuthService {
         },
       });
     } catch (error) {
-      throw new Unauthorized('invalidate token');
+      throw new HttpException('invalidate token', HttpStatus.UNAUTHORIZED);
     }
   }
 
