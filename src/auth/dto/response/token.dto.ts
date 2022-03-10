@@ -4,7 +4,4 @@ import { Exclude, Expose } from 'class-transformer';
 export class TokenDto {
   @Expose()
   readonly accessToken: string;
-
-  @Expose()
-  readonly exp: number;
 }

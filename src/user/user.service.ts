@@ -1,27 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { hashSync } from 'bcryptjs';
-import { UnprocessableEntity, NotFound, Conflict } from 'http-errors';
-import { AuthService } from 'src/auth/auth.service';
-import { TokenDto } from 'src/auth/dto/response/token.dto';
-import { PrismaService } from 'src/prisma.service';
+import { AuthService } from '../auth/auth.service';
+import { TokenDto } from '../auth/dto/response/token.dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private prisma: PrismaService,
-    private authService: AuthService,
-  ) {}
-  async createUser(createUserDto: CreateUserDto): Promise<TokenDto> {
-    const userFound = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
-      select: { id: true },
-      rejectOnNotFound: false,
-    });
+  constructor(private prisma: PrismaService) {}
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const userFound = await this.findByEmail(createUserDto.email);
 
     if (userFound) {
-      throw new Conflict('Email belong other user');
+      throw new HttpException('Email does not valid', HttpStatus.UNAUTHORIZED);
     }
+
     const user = await this.prisma.user.create({
       data: {
         name: createUserDto.name,
@@ -30,7 +24,18 @@ export class UserService {
         role: 'C',
       },
     });
-    const token = await this.authService.createToken(user.id);
-    return this.authService.generateAccessToken(token.jti);
+
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      rejectOnNotFound: false,
+    });
+
+    return user;
   }
 }

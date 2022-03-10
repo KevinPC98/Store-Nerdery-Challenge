@@ -1,25 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { Unauthorized, NotFound, Conflict } from 'http-errors';
-import { PrismaService } from 'src/prisma.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Unauthorized } from 'http-errors';
+import { PrismaService } from '../prisma/prisma.service';
 import { compareSync } from 'bcryptjs';
 import { sign, verify } from 'jsonwebtoken';
 import { TokenDto } from './dto/response/token.dto';
 import { Token } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
+import { UserService } from '../user/user.service';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userService: UserService,
+  ) {}
 
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<TokenDto> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: authCredentialsDto.email,
-      },
-    });
+    const user = await this.userService.findByEmail(authCredentialsDto.email);
 
     if (!user) {
-      throw new Unauthorized('User doesnt exist');
+      throw new HttpException('Email does not valid', HttpStatus.UNAUTHORIZED);
     }
 
     const validPassword = compareSync(
@@ -28,7 +29,7 @@ export class AuthService {
     );
 
     if (!validPassword) {
-      throw new Unauthorized('Password incorrect');
+      throw new HttpException('Password is wrong', HttpStatus.UNAUTHORIZED);
     }
 
     const recordToken = await this.createToken(user.id);
@@ -36,13 +37,23 @@ export class AuthService {
     return this.generateAccessToken(recordToken.jti);
   }
 
+  async signUp(createUserDto: CreateUserDto): Promise<TokenDto> {
+    const user = await this.userService.createUser(createUserDto);
+    const token = await this.createToken(user.id);
+    return this.generateAccessToken(token.jti);
+  }
+
   async createToken(id: string): Promise<Token> {
-    const token = await this.prisma.token.create({
-      data: {
-        userId: id,
-      },
-    });
-    return token;
+    try {
+      const token = await this.prisma.token.create({
+        data: {
+          userId: id,
+        },
+      });
+      return token;
+    } catch (error) {
+      throw new HttpException('User no found', HttpStatus.NOT_FOUND);
+    }
   }
 
   async singout(token: string): Promise<void> {
@@ -79,7 +90,6 @@ export class AuthService {
 
     return {
       accessToken,
-      exp,
     };
   }
 }
