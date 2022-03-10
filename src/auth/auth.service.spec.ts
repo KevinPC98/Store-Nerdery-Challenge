@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { hashSync } from 'bcryptjs';
-import { name, internet, address, datatype } from 'faker';
+import { name, internet, datatype, lorem } from 'faker';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
@@ -87,6 +88,43 @@ describe('AuthService', () => {
       const result = await authService.createToken(userCreated.id);
 
       expect(result).toHaveProperty('jti');
+    });
+  });
+
+  describe('generateAccessToken', () => {
+    it('should generate an access token', async () => {
+      const value = lorem.word();
+      const accessToken = lorem.word();
+
+      jest.spyOn(jwt, 'sign').mockImplementation(jest.fn(() => accessToken));
+      const result = authService.generateAccessToken(value);
+
+      expect(result).toHaveProperty('accessToken', accessToken);
+    });
+  });
+
+  describe('singout', () => {
+    afterAll(async () => {
+      await prisma.user.delete({
+        where: {
+          email: userCreated.email,
+        },
+      });
+    });
+    it('should delete token from session', async () => {
+      const token = await authService.signIn({
+        email: userCreated.email,
+        password: userCreated.password,
+      });
+
+      expect(await authService.singout(token.accessToken)).toBeUndefined();
+    });
+
+    it('should throw error if the token is invalid', async () => {
+      const token = name.firstName();
+      await expect(authService.singout(token)).rejects.toThrow(
+        new HttpException('invalidate token', HttpStatus.UNAUTHORIZED),
+      );
     });
   });
 });
