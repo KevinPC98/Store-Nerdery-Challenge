@@ -1,23 +1,28 @@
 import { Expose, Exclude } from 'class-transformer';
-import { IsEmail, /* IsNotEmpty, */ IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from 'class-validator';
+import { Role } from 'src/utils/enums';
 
 @Exclude()
 export class CreateUserDto {
   @Expose()
-  //@IsNotEmpty()
+  @IsNotEmpty()
   @IsString()
   readonly name: string;
 
   @Expose()
+  @IsNotEmpty()
   @IsEmail()
   readonly email: string;
 
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Length(6, 20)
   readonly password: string;
 
   @Expose()
-  @IsString()
-  readonly role: string;
+  @IsNotEmpty()
+  @IsNotEmpty()
+  @IsEnum(Role)
+  readonly role: Role;
 }

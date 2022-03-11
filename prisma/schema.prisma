@@ -68,9 +68,9 @@ model Product {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   category    String
-  price       String
+  price       Float
   image       String
-  visible     Boolean
+  visible     Boolean   @default(true)
   stock       Int
   likes       Like[]
   containts   Contain[]
