@@ -7,7 +7,8 @@ import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { Role } from '../utils/enums';
 
 describe('AuthService', () => {
   let prisma: PrismaService;
@@ -18,10 +19,13 @@ describe('AuthService', () => {
     name: name.firstName(),
     email: internet.email(),
     password: hashSync(internet.password(), 10),
-    role: 'C',
+    role: Role.client,
   };
 
-  beforeEach(async () => {
+  /*   beforeEach(async () => {
+
+  }); */
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [AuthService, PrismaService, UserService],
     }).compile();
@@ -29,13 +33,15 @@ describe('AuthService', () => {
     authService = moduleRef.get<AuthService>(AuthService);
     prisma = moduleRef.get<PrismaService>(PrismaService);
     userService = moduleRef.get<UserService>(UserService);
-  });
-  beforeAll(async () => {
     userCreated = await prisma.user.create({
       data: {
         ...createUserDto,
       },
     });
+  });
+
+  it('should be defined', () => {
+    expect(authService).toBeDefined();
   });
   describe('signIn', () => {
     it('should throw an error if the email is not valid', async () => {
