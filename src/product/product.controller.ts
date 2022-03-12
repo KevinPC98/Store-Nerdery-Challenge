@@ -6,15 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
-import { PrismaService } from '../prisma/prisma.service';
 import { Roles } from 'src/auth/role/roles.decorator';
 import { Role } from 'src/utils/enums';
 import { ResponseProductDto } from './dto/response/response-product.dto';
 import { UpdateVisibilityDto } from './dto/request/update-visible.dto';
+import { Product } from '@prisma/client';
+import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
 
 @Controller('product')
 export class ProductController {
@@ -34,7 +36,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.productService.remove(id);
   }
 
@@ -42,23 +44,28 @@ export class ProductController {
   updateVisibility(
     @Param('id') id: string,
     @Body() updateVisibilityDto: UpdateVisibilityDto,
-  ): Promise<void> {
+  ): Promise<ResponseProductDto> {
     return this.productService.updateVisibility(
       id,
       updateVisibilityDto.visible,
     );
   }
 
-  /*   @Get()
-  findAll() {
-    return this.productService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+    return this.productService.findOne(id);
   }
 
+  @Get('category/:category')
+  getByCategory(@Param('category') category: string): Promise<Product[]> {
+    return this.productService.filterByCategory(category);
+  }
 
-  } */
+  @Get()
+  findAll(
+    @Query('take') take,
+    @Query('page') page,
+  ): Promise<ListProductsPaginationDto> {
+    return this.productService.findAll({ take, page });
+  }
 }
