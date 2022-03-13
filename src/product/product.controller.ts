@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
@@ -17,6 +18,7 @@ import { ResponseProductDto } from './dto/response/response-product.dto';
 import { UpdateVisibilityDto } from './dto/request/update-visible.dto';
 import { Product } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('product')
 export class ProductController {
@@ -52,6 +54,7 @@ export class ProductController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard())
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
   }
@@ -68,4 +71,9 @@ export class ProductController {
   ): Promise<ListProductsPaginationDto> {
     return this.productService.findAll({ take, page });
   }
+
+  /*   @Get()
+  likeProduct():  Promise<> {
+
+  } */
 }

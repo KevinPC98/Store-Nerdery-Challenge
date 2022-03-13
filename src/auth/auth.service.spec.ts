@@ -106,7 +106,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('generateAccessToken', () => {
+  /*   describe('generateAccessToken', () => {
     it('should generate an access token', async () => {
       const value = lorem.word();
       const accessToken = lorem.word();
@@ -116,7 +116,7 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('accessToken', accessToken);
     });
-  });
+  }); */
 
   describe('singout', () => {
     it('should delete token from session', async () => {

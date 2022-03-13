@@ -4,6 +4,7 @@ import { hashSync } from 'bcryptjs';
 import { Role } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {

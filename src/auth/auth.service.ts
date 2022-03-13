@@ -7,6 +7,7 @@ import { Token } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {

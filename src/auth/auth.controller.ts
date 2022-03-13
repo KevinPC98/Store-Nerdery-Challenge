@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Role } from '../utils/enums';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
 import { TokenDto } from './dto/response/token.dto';
 import { Roles } from './role/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
     return this.authService.signUp(createUserDto);
   }
 
-  //@Roles(Role.client, Role.manager)
+  @UseGuards(AuthGuard())
   @Get('/signout')
   singout(@Req() req): Promise<void> {
     const token = req.headers.authorization.replace('Bearer ', '');
