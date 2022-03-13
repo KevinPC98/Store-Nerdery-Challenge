@@ -19,13 +19,13 @@ import { UpdateVisibilityDto } from './dto/request/update-visible.dto';
 import { Product } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  //@Roles(Role.manager)
   create(
     @Body() createProductDto: CreateProductDto,
   ): Promise<ResponseProductDto> {
@@ -54,17 +54,19 @@ export class ProductController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard())
+  @Public()
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
   }
 
   @Get('category/:category')
+  @Public()
   getByCategory(@Param('category') category: string): Promise<Product[]> {
     return this.productService.filterByCategory(category);
   }
 
   @Get()
+  @Public()
   findAll(
     @Query('take') take,
     @Query('page') page,
