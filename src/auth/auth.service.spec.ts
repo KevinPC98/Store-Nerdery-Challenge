@@ -15,10 +15,11 @@ describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
   let userCreated: User;
+  const password = internet.password();
   const createUserDto: CreateUserDto = {
     name: name.firstName(),
     email: internet.email(),
-    password: hashSync(internet.password(), 10),
+    password: hashSync(password, 10),
     role: Role.client,
   };
 
@@ -33,17 +34,20 @@ describe('AuthService', () => {
     authService = moduleRef.get<AuthService>(AuthService);
     prisma = moduleRef.get<PrismaService>(PrismaService);
     userService = moduleRef.get<UserService>(UserService);
-    userCreated = await prisma.user.create({
-      data: {
-        ...createUserDto,
-      },
-    });
   });
 
   it('should be defined', () => {
     expect(authService).toBeDefined();
   });
   describe('signIn', () => {
+    beforeAll(async () => {
+      userCreated = await prisma.user.create({
+        data: {
+          ...createUserDto,
+        },
+      });
+    });
+
     it('should throw an error if the email is not valid', async () => {
       await expect(
         authService.signIn({
@@ -66,10 +70,10 @@ describe('AuthService', () => {
       );
     });
 
-    it('should return a token if the credentials are valids', async () => {
+    it('should return an access token if the credentials are valids', async () => {
       const result = await authService.signIn({
         email: userCreated.email,
-        password: userCreated.password,
+        password,
       });
 
       expect(result).toHaveProperty('accessToken');
@@ -78,7 +82,12 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     it('should return a token if the data from user is valid', async () => {
-      const result = await authService.signUp(createUserDto);
+      const result = await authService.signUp({
+        name: name.firstName(),
+        email: internet.email(),
+        password,
+        role: Role.client,
+      });
       expect(result).toHaveProperty('accessToken');
     });
   });
@@ -110,17 +119,10 @@ describe('AuthService', () => {
   });
 
   describe('singout', () => {
-    afterAll(async () => {
-      await prisma.user.delete({
-        where: {
-          email: userCreated.email,
-        },
-      });
-    });
     it('should delete token from session', async () => {
       const token = await authService.signIn({
         email: userCreated.email,
-        password: userCreated.password,
+        password,
       });
 
       expect(await authService.singout(token.accessToken)).toBeUndefined();

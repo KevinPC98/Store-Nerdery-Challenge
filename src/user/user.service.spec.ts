@@ -7,6 +7,7 @@ import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
+import { Role } from '../utils/enums';
 
 describe('UserService', () => {
   let prisma: PrismaService;
@@ -17,10 +18,10 @@ describe('UserService', () => {
     name: name.firstName(),
     email: internet.email(),
     password: hashSync(internet.password(), 10),
-    role: 'C',
+    role: Role.client,
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService, PrismaService, UserService],
     }).compile();
@@ -39,7 +40,7 @@ describe('UserService', () => {
   });
 
   describe('createUser', () => {
-    afterEach(async () => {
+    afterAll(async () => {
       await prisma.user.delete({
         where: {
           email: createUserDto.email,
@@ -59,7 +60,12 @@ describe('UserService', () => {
     });
 
     it('should return a token if the user was created succesfully', async () => {
-      const result = await authService.signUp(createUserDto);
+      const result = await authService.signUp({
+        name: name.firstName(),
+        email: internet.email(),
+        password: hashSync(internet.password(), 10),
+        role: Role.client,
+      });
       expect(result).toHaveProperty('accessToken');
     });
   });

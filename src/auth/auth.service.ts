@@ -87,8 +87,6 @@ export class AuthService {
       process.env.JWT_SECRET_KEY as string,
     );
 
-    return {
-      accessToken,
-    };
+    return { accessToken };
   }
 }
