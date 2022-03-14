@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Product } from '@prisma/client';
-import { commerce, database, datatype, lorem } from 'faker';
+import { Product, User } from '@prisma/client';
+import { commerce, datatype, internet, lorem, name } from 'faker';
+import { Role } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
@@ -11,6 +12,7 @@ describe('ProductService', () => {
   let productService: ProductService;
   let prisma: PrismaService;
   let productCreated: Product;
+  let userCreated: User;
   const createProductDto: CreateProductDto = {
     description: commerce.productDescription(),
     category: lorem.word(),
@@ -289,6 +291,50 @@ describe('ProductService', () => {
       const result = await productService.findAll({ take, page });
       expect(result).toHaveProperty('products');
       expect(result).toHaveProperty('pagination');
+    });
+  });
+
+  describe('sendALike', () => {
+    beforeAll(async () => {
+      productCreated = await prisma.product.create({
+        data: {
+          ...createProductDto,
+        },
+      });
+
+      userCreated = await prisma.user.create({
+        data: {
+          name: name.firstName(),
+          email: internet.email(),
+          password: internet.password(),
+          role: Role.client,
+        },
+      });
+    });
+
+    it('should throw an error if the id from user does not exists', async () => {
+      await expect(
+        productService.sendALike(datatype.uuid(), productCreated.id),
+      ).rejects.toThrow(
+        new HttpException('User not found', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should throw an error if the id from product does not exists', async () => {
+      await expect(
+        productService.sendALike(userCreated.id, datatype.uuid()),
+      ).rejects.toThrow(
+        new HttpException('Product not found', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should return like if the user and product are valids', async () => {
+      const result = await productService.sendALike(
+        userCreated.id,
+        productCreated.id,
+      );
+
+      expect(result).toBeUndefined();
     });
   });
 });

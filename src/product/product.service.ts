@@ -6,6 +6,7 @@ import { CreateProductDto } from './dto/request/create-product.dto';
 import { PaginationRequestDto } from './dto/request/pagination-request.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
+import { ResponseLikeDto } from './dto/response/response-like.dto';
 import { ResponseProductDto } from './dto/response/response-product.dto';
 
 @Injectable()
@@ -147,6 +148,38 @@ export class ProductService {
           currentPage: pageNro,
           nextPage,
           previousPage,
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendALike(userId: string, productId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+      rejectOnNotFound: false,
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+      rejectOnNotFound: false,
+    });
+
+    if (!product) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+
+    try {
+      const like = await this.prisma.like.create({
+        data: {
+          userId,
+          productId,
         },
       });
     } catch (error) {
