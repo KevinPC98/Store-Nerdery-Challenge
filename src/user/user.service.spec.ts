@@ -50,9 +50,11 @@ describe('UserService', () => {
 
     it('should throw an error if the email form user not exists', async () => {
       await expect(
-        authService.signIn({
-          email: internet.email(),
-          password: internet.password(),
+        authService.signUp({
+          name: name.firstName(),
+          email: userCreated.email,
+          password: hashSync(internet.password(), 10),
+          role: Role.client,
         }),
       ).rejects.toThrow(
         new HttpException('Email does not valid', HttpStatus.UNAUTHORIZED),

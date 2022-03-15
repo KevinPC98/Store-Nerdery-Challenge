@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { hashSync } from 'bcryptjs';
-import { name, internet, datatype, lorem } from 'faker';
+import { name, internet, datatype } from 'faker';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
-import jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { Role } from '../utils/enums';
@@ -23,9 +22,6 @@ describe('AuthService', () => {
     role: Role.client,
   };
 
-  /*   beforeEach(async () => {
-
-  }); */
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [AuthService, PrismaService, UserService],
@@ -105,18 +101,6 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('jti');
     });
   });
-
-  /*   describe('generateAccessToken', () => {
-    it('should generate an access token', async () => {
-      const value = lorem.word();
-      const accessToken = lorem.word();
-
-      jest.spyOn(jwt, 'sign').mockImplementation(jest.fn(() => accessToken));
-      const result = authService.generateAccessToken(value);
-
-      expect(result).toHaveProperty('accessToken', accessToken);
-    });
-  }); */
 
   describe('singout', () => {
     it('should delete token from session', async () => {
