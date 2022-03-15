@@ -7,9 +7,10 @@ import { ProductModule } from './product/product.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role/role.guard';
 import { JwtAuthGuard } from './auth/strategy/jwt.guard';
+import { CartModule } from './cart/cart.module';
 
 @Module({
-  imports: [AuthModule, UserModule, ProductModule],
+  imports: [AuthModule, UserModule, ProductModule, CartModule],
   controllers: [AppController],
   providers: [
     AppService,
