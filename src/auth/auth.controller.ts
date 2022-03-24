@@ -1,10 +1,8 @@
 import { Body, Controller, Post, Request } from '@nestjs/common';
-import { Role } from '../utils/enums';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
 import { TokenDto } from './dto/response/token.dto';
-import { Roles } from './role/roles.decorator';
 import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
