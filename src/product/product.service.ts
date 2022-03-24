@@ -1,17 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, Product } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
+import { ImageDto } from 'src/images/dto/request/image.dto';
+import { ImagesService } from 'src/images/images.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { PaginationRequestDto } from './dto/request/pagination-request.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
-import { ResponseLikeDto } from './dto/response/response-like.dto';
 import { ResponseProductDto } from './dto/response/response-product.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private imagesService: ImagesService,
+  ) {}
 
   async create(
     createProductDto: CreateProductDto,
@@ -89,6 +93,7 @@ export class ProductService {
     if (!productFound) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
+    productFound.image = await this.imagesService.generatePresignedUrl(id);
     return plainToInstance(ResponseProductDto, productFound);
   }
 
@@ -182,6 +187,43 @@ export class ProductService {
           productId,
         },
       });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async uploadImage(
+    productId: string,
+    //imageDto: ImageDto,
+  ): Promise<ResponseProductDto> {
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: {
+          id: productId,
+        },
+        select: {
+          id: true,
+        },
+        rejectOnNotFound: false,
+      });
+
+      if (!product) {
+        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      }
+
+      const image = await this.imagesService.uploadPublicFile(product.id);
+      console.log(image);
+      console.log('________________');
+      console.log(await this.imagesService.generatePresignedUrl(product.id));
+
+      const productUpdated = await this.prisma.product.update({
+        where: { id: product.id },
+        data: {
+          image,
+        },
+      });
+
+      return plainToInstance(ResponseProductDto, productUpdated);
     } catch (error) {
       throw error;
     }

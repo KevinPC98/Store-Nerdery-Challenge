@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
@@ -18,10 +18,9 @@ import { ResponseProductDto } from './dto/response/response-product.dto';
 import { UpdateVisibilityDto } from './dto/request/update-visible.dto';
 import { Product, User } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { Public } from '../auth/decorators/public.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import { ResponseLikeDto } from './dto/response/response-like.dto';
+import { ImageDto } from '../images/dto/request/image.dto';
 
 @Controller('product')
 export class ProductController {
@@ -87,5 +86,13 @@ export class ProductController {
     @Param('id') productId: string,
   ): Promise<void> {
     return this.productService.sendALike(user.id, productId);
+  }
+
+  @Put('/:id/product-image')
+  @Roles(Role.manager)
+  async uploadImage(
+    @Param('id') productId: string,
+  ): Promise<ResponseProductDto> {
+    return await this.productService.uploadImage(productId /* , imageDto */);
   }
 }

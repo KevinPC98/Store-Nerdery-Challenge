@@ -8,9 +8,19 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role/role.guard';
 import { JwtAuthGuard } from './auth/strategy/jwt.guard';
 import { CartModule } from './cart/cart.module';
+import { ConfigModule } from '@nestjs/config';
+import { ImagesService } from './images/images.service';
 
 @Module({
-  imports: [AuthModule, UserModule, ProductModule, CartModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
+    AuthModule,
+    UserModule,
+    ProductModule,
+    CartModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
@@ -22,6 +32,7 @@ import { CartModule } from './cart/cart.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    ImagesService,
   ],
 })
 export class AppModule {}
