@@ -7,12 +7,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
 import { ProductService } from './product.service';
+import { ImagesService } from '../images/images.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('ProductService', () => {
   let productService: ProductService;
   let prisma: PrismaService;
   let productCreated: Product;
   let userCreated: User;
+  let imagesService: ImagesService;
+  let configService: ConfigService;
+
   const createProductDto: CreateProductDto = {
     description: commerce.productDescription(),
     category: lorem.word(),
@@ -23,11 +28,13 @@ describe('ProductService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProductService, PrismaService],
+      providers: [ProductService, PrismaService, ImagesService, ConfigService],
     }).compile();
 
     productService = module.get<ProductService>(ProductService);
     prisma = module.get<PrismaService>(PrismaService);
+    imagesService = module.get<ImagesService>(ImagesService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -200,7 +207,7 @@ describe('ProductService', () => {
 
       expect(result).toHaveProperty('category', createProductDto.category);
       expect(result).toHaveProperty('price', createProductDto.price);
-      expect(result).toHaveProperty('image', createProductDto.image);
+      expect(result).toHaveProperty('image', expect.any(String));
       expect(result).toHaveProperty('stock', createProductDto.stock);
       expect(result).toHaveProperty('visible');
       expect(result).toHaveProperty('updatedAt', expect.any(Date));
@@ -232,9 +239,7 @@ describe('ProductService', () => {
     });
 
     it('should throw an error if the category does not exists', async () => {
-      await expect(
-        productService.filterByCategory(lorem.word()),
-      ).rejects.toThrow(
+      await expect(productService.filterByCategory('category')).rejects.toThrow(
         new HttpException(
           'There are no products for this category',
           HttpStatus.NOT_FOUND,
@@ -335,6 +340,41 @@ describe('ProductService', () => {
       );
 
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('uploadImage', () => {
+    beforeEach(async () => {
+      productCreated = await prisma.product.create({
+        data: {
+          ...createProductDto,
+        },
+      });
+    });
+    afterEach(async () => {
+      await prisma.product.delete({
+        where: {
+          id: productCreated.id,
+        },
+      });
+    });
+    it('should throw an error if the product does not exist', async () => {
+      await expect(
+        productService.uploadImage('1c2s5s6sa-4a7s4'),
+      ).rejects.toThrow(
+        new HttpException('Product not found', HttpStatus.NOT_FOUND),
+      );
+    });
+    it('should return a product with a presigned url if the product is valid', async () => {
+      const result = await productService.uploadImage(productCreated.id);
+
+      expect(result).toHaveProperty('category', createProductDto.category);
+      expect(result).toHaveProperty('price', createProductDto.price);
+      expect(result).toHaveProperty('image', expect.any(String));
+      expect(result).toHaveProperty('stock', createProductDto.stock);
+      expect(result).toHaveProperty('visible');
+      expect(result).toHaveProperty('updatedAt', expect.any(Date));
+      expect(result).toHaveProperty('createdAt', expect.any(Date));
     });
   });
 });

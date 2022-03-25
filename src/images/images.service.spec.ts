@@ -1,18 +1,36 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImagesService } from './images.service';
+import { ConfigService } from '@nestjs/config';
+import { name, internet, datatype } from 'faker';
 
 describe('ImagesService', () => {
-  let service: ImagesService;
+  let imagesService: ImagesService;
+  let configService: ConfigService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ImagesService],
+      providers: [ImagesService, ConfigService],
     }).compile();
 
-    service = module.get<ImagesService>(ImagesService);
+    imagesService = module.get<ImagesService>(ImagesService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(imagesService).toBeDefined();
+  });
+
+  describe('uploadPublicFile', () => {
+    it('should return a string data', async () => {
+      expect(
+        await imagesService.uploadPublicFile(datatype.string()),
+      ).toStrictEqual(expect.any(String));
+    });
+
+    it('should return a string data', async () => {
+      expect(
+        await imagesService.generatePresignedUrl(datatype.string()),
+      ).toStrictEqual(expect.any(String));
+    });
   });
 });
