@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImagesService } from './images.service';
 import { ConfigService } from '@nestjs/config';
-import { name, internet, datatype } from 'faker';
+import { datatype } from 'faker';
 
 describe('ImagesService', () => {
   let imagesService: ImagesService;
@@ -18,6 +18,7 @@ describe('ImagesService', () => {
 
   it('should be defined', () => {
     expect(imagesService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('uploadPublicFile', () => {

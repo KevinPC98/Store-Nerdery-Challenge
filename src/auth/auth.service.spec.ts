@@ -34,6 +34,7 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(authService).toBeDefined();
+    expect(userService).toBeDefined();
   });
   describe('signIn', () => {
     beforeAll(async () => {

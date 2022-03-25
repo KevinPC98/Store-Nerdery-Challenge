@@ -39,6 +39,8 @@ describe('ProductService', () => {
 
   it('should be defined', () => {
     expect(productService).toBeDefined();
+    expect(imagesService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('create', () => {

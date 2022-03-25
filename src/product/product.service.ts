@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, Product } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { ImageDto } from 'src/images/dto/request/image.dto';
 import { ImagesService } from '../images/images.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
@@ -181,7 +180,7 @@ export class ProductService {
     }
 
     try {
-      const like = await this.prisma.like.create({
+      await this.prisma.like.create({
         data: {
           userId,
           productId,

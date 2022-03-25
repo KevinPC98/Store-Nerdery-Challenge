@@ -20,7 +20,6 @@ import { Product, User } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import { ImageDto } from '../images/dto/request/image.dto';
 
 @Controller('product')
 export class ProductController {
