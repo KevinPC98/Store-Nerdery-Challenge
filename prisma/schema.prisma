@@ -49,14 +49,14 @@ model Contain {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
 
-  @@map("containts")
+  @@map("contain")
 }
 
 model Cart {
   id        String    @id @default(uuid())
   userId    String    @map("user_id")
   user      User      @relation(fields: [userId], references: [id])
-  wasBoght  Boolean   @default(false) @map("was_bought")
+  wasBought Boolean   @default(false) @map("was_bought")
   containts Contain[]
 
   @@map("carts")
