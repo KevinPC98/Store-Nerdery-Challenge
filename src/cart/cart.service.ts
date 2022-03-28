@@ -36,7 +36,7 @@ export class CartService {
 
     try {
       let cart = await this.prisma.cart.findFirst({
-        where: { userId, wasBoght: false },
+        where: { userId, wasBought: false },
       });
       await this.prisma.product.update({
         where: {
@@ -115,5 +115,58 @@ export class CartService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getCart(idCart: string): Promise<CartDto> {
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        id: idCart,
+      },
+    });
+
+    if (!cart) {
+      throw new HttpException('Cart not found', HttpStatus.NOT_FOUND);
+    }
+
+    const orderDetail = await this.prisma.contain.findMany({
+      where: {
+        cartId: cart.id,
+      },
+      select: {
+        quantity: true,
+        product: {
+          select: {
+            description: true,
+            price: true,
+          },
+        },
+      },
+    });
+
+    return plainToInstance(CartDto, {
+      id: cart.id,
+      products: plainToInstance(ProductDetailsDto, orderDetail),
+    });
+  }
+
+  async buyCart(idCart: string): Promise<void> {
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        id: idCart,
+      },
+    });
+
+    if (!cart) {
+      throw new HttpException('Cart not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.prisma.cart.update({
+      where: {
+        id: idCart,
+      },
+      data: {
+        wasBought: true,
+      },
+    });
   }
 }

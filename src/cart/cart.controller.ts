@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Patch } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Roles } from '../auth/role/roles.decorator';
@@ -17,5 +17,17 @@ export class CartController {
     @Body('quantity') quantity: number,
   ) {
     return this.cartService.pickProducts(user.id, productId, quantity);
+  }
+
+  @Get('/:id')
+  @Roles(Role.client)
+  getCart(@GetUser() user: User, @Param('id') cartId: string) {
+    return this.cartService.getCart(cartId);
+  }
+
+  @Patch('/:id')
+  @Roles(Role.client)
+  buyCart(@GetUser() user: User, @Param('id') cartId: string) {
+    return this.cartService.buyCart(cartId);
   }
 }
