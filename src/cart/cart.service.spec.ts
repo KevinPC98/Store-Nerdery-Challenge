@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Product, User } from '@prisma/client';
+import { Cart, Product, User } from '@prisma/client';
 import { CreateProductDto } from '../product/dto/request/create-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CartService } from './cart.service';
@@ -84,6 +84,73 @@ describe('CartService', () => {
       );
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('products');
+    });
+  });
+
+  describe('getCart', () => {
+    let cartCreated: Cart;
+    beforeAll(async () => {
+      userCreated = await prisma.user.create({
+        data: {
+          name: name.firstName(),
+          email: internet.email(),
+          password: hashSync(password, 10),
+          role: Role.client,
+        },
+      });
+
+      cartCreated = await prisma.cart.create({
+        data: {
+          id: datatype.uuid(),
+          userId: userCreated.id,
+          wasBought: false,
+        },
+      });
+    });
+
+    it('should throw an error if the cart does not exist', async () => {
+      await expect(cartService.getCart(datatype.uuid())).rejects.toThrow(
+        new HttpException('Cart not found', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should return the details of cart', async () => {
+      const result = await cartService.getCart(cartCreated.id);
+      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('products');
+    });
+  });
+
+  describe('buyCart', () => {
+    let cartCreated: Cart;
+    beforeAll(async () => {
+      userCreated = await prisma.user.create({
+        data: {
+          name: name.firstName(),
+          email: internet.email(),
+          password: hashSync(password, 10),
+          role: Role.client,
+        },
+      });
+
+      cartCreated = await prisma.cart.create({
+        data: {
+          id: datatype.uuid(),
+          userId: userCreated.id,
+          wasBought: false,
+        },
+      });
+    });
+
+    it('should throw an error if the cart does not exist', async () => {
+      await expect(cartService.getCart(datatype.uuid())).rejects.toThrow(
+        new HttpException('Cart not found', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should update the status of cart', async () => {
+      const result = await cartService.buyCart(cartCreated.id);
+      expect(result).toBeUndefined();
     });
   });
 });
