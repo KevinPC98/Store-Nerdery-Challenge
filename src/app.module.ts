@@ -10,6 +10,9 @@ import { JwtAuthGuard } from './auth/strategy/jwt.guard';
 import { CartModule } from './cart/cart.module';
 import { ConfigModule } from '@nestjs/config';
 import { ImagesService } from './images/images.service';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,6 +23,12 @@ import { ImagesService } from './images/images.service';
     UserModule,
     ProductModule,
     CartModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema/schema.gql'),
+      sortSchema: true,
+      playground: true,
+    }),
   ],
   controllers: [AppController],
   providers: [
