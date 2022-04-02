@@ -1,0 +1,117 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Cart {
+  contain: Contain!
+  id: String!
+  user: [User]!
+  wasBought: Boolean!
+}
+
+input CartInput {
+  quantity: Int!
+}
+
+type Contain {
+  cart: [Cart]!
+  id: String!
+  product: [Product]!
+  quantity: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Like {
+  id: String!
+  like: Boolean!
+  product: [Product!]!
+  user: [User!]!
+}
+
+input LikeInput {
+  like: Boolean!
+}
+
+input ListByCategory {
+  category: String!
+}
+
+type Message {
+  message: String!
+}
+
+type Mutation {
+  buyCart(id: String!): Cart!
+  likeProduct(LikeInput: LikeInput!, id: String!): Message!
+  pickProducts(CartInput: CartInput!, id: String!): Cart!
+  productCreate(productInput: ProductInput!): Product!
+  productUpdate(id: String!, updateProductInput: UpdateProductInput!): Product!
+  visibilityUpdate(UpdateVisibilityInput: UpdateVisibilityInput!, id: String!): Product!
+}
+
+input PaginationInput {
+  page: Int!
+  take: Int!
+}
+
+type Product {
+  category: String!
+  createdAt: DateTime!
+  description: String!
+  id: String!
+  image: String!
+  price: Float!
+  stock: Int!
+  updatedAt: DateTime!
+  visible: Boolean!
+}
+
+input ProductInput {
+  category: String!
+  description: String!
+  image: String!
+  price: Float!
+  stock: Int!
+}
+
+type Query {
+  getAll(PaginationInput: PaginationInput!): Product!
+  getByCategory(ListByCategory: ListByCategory!): [Product!]!
+  getCart(id: String!): Cart!
+  getProduct(id: String!): Product!
+}
+
+type Token {
+  createdAt: DateTime!
+  id: String!
+  jti: String!
+  user: [User]!
+}
+
+input UpdateProductInput {
+  category: String!
+  description: String!
+  image: String!
+  price: Float!
+  stock: Int!
+}
+
+input UpdateVisibilityInput {
+  visible: Boolean!
+}
+
+type User {
+  cart: Cart!
+  contain: Token!
+  createdAt: DateTime!
+  email: String!
+  id: String!
+  like: Like!
+  name: String!
+  password: String!
+  role: String!
+}
