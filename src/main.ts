@@ -14,6 +14,6 @@ async function bootstrap() {
     signatureVersion: 'v4',
   });
 
-  await app.listen(3000);
+  await app.listen(configService.get('PORT'));
 }
 bootstrap();
