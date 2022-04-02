@@ -13,6 +13,9 @@ import { ImagesService } from './images/images.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { GqlRolesGuard } from './auth/role/gql-role.guard';
+import { GqlJwtGuard } from './auth/strategy/gql-jwt.guard';
 
 @Module({
   imports: [
@@ -27,19 +30,21 @@ import { join } from 'path';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema/schema.gql'),
       sortSchema: true,
-      playground: true,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
   controllers: [AppController],
   providers: [
     AppService,
+
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: GqlJwtGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: GqlRolesGuard,
     },
     ImagesService,
   ],
