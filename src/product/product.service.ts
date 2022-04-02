@@ -1,13 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Prisma, Product } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { ImagesService } from '../images/images.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { LikeInput } from './dto/input/like.input';
+import { ListByCategory } from './dto/input/list-by-category.input';
+import { UpdateProductInput } from './dto/input/update-product.input';
+import { UpdateVisibilityInput } from './dto/input/update-visibility.input';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { PaginationRequestDto } from './dto/request/pagination-request.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';
+import { UpdateVisibilityDto } from './dto/request/update-visible.dto';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
+import { ResponseLikeDto } from './dto/response/response-like.dto';
 import { ResponseProductDto } from './dto/response/response-product.dto';
+import { Like } from './models/like.model';
+import { Product } from './models/product.model';
 
 @Injectable()
 export class ProductService {
@@ -16,20 +24,18 @@ export class ProductService {
     private imagesService: ImagesService,
   ) {}
 
-  async create(
-    createProductDto: CreateProductDto,
-  ): Promise<ResponseProductDto> {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = await this.prisma.product.create({
       data: {
         ...createProductDto,
       },
     });
-    return plainToInstance(ResponseProductDto, product);
+    return plainToInstance(Product, product);
   }
 
   async update(
     id: string,
-    updateProductDto: UpdateProductDto,
+    updateProductDto: UpdateProductInput,
   ): Promise<ResponseProductDto> {
     try {
       const product = await this.prisma.product.update({
@@ -65,12 +71,12 @@ export class ProductService {
 
   async updateVisibility(
     id: string,
-    visible: boolean,
+    updateVisibilityDto: UpdateVisibilityInput,
   ): Promise<ResponseProductDto> {
     try {
       const productUpdated = await this.prisma.product.update({
         where: { id },
-        data: { visible },
+        data: { visible: updateVisibilityDto.visible },
       });
 
       return plainToInstance(ResponseProductDto, productUpdated);
@@ -96,9 +102,9 @@ export class ProductService {
     return plainToInstance(ResponseProductDto, productFound);
   }
 
-  async filterByCategory(category: string): Promise<Product[]> {
+  async filterByCategory(listByCategory: ListByCategory): Promise<Product[]> {
     const listProducts = await this.prisma.product.findMany({
-      where: { category, visible: true },
+      where: { category: listByCategory.category, visible: true },
     });
     if (!listProducts.length) {
       throw new HttpException(
@@ -159,7 +165,11 @@ export class ProductService {
     }
   }
 
-  async sendALike(userId: string, productId: string): Promise<void> {
+  async sendALike(
+    userId: string,
+    productId: string,
+    likeInput: LikeInput,
+  ): Promise<void> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true },

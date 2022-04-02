@@ -9,6 +9,9 @@ import { UpdateProductDto } from './dto/request/update-product.dto';
 import { ProductService } from './product.service';
 import { ImagesService } from '../images/images.service';
 import { ConfigService } from '@nestjs/config';
+import { UpdateVisibilityInput } from './dto/input/update-visibility.input';
+import { ListByCategory } from './dto/input/list-by-category.input';
+import { LikeInput } from './dto/input/like.input';
 
 describe('ProductService', () => {
   let productService: ProductService;
@@ -163,20 +166,25 @@ describe('ProductService', () => {
       });
     });
     it('should return the product updated with the new value of visible', async () => {
-      const value = datatype.boolean();
+      const visible = datatype.boolean();
+      const updateVisibilityDto: UpdateVisibilityInput = {
+        visible,
+      };
       const result = await productService.updateVisibility(
         productCreated.id,
-        value,
+        updateVisibilityDto,
       );
 
-      expect(result).toHaveProperty('visible', value);
+      expect(result).toHaveProperty('visible', visible);
     });
 
     it('should throw an error if the id is invalid', async () => {
-      const value = datatype.boolean();
-
+      const visible = datatype.boolean();
+      const updateVisibilityDto: UpdateVisibilityInput = {
+        visible,
+      };
       await expect(
-        productService.updateVisibility(datatype.uuid(), value),
+        productService.updateVisibility(datatype.uuid(), updateVisibilityDto),
       ).rejects.toThrow(
         new HttpException('Product not found', HttpStatus.NOT_FOUND),
       );
@@ -233,15 +241,21 @@ describe('ProductService', () => {
       });
     });
     it('should return a list of elements by category', async () => {
-      const result = await productService.filterByCategory(
-        productCreated.category,
-      );
+      const listByCategory: ListByCategory = {
+        category: productCreated.category,
+      };
+      const result = await productService.filterByCategory(listByCategory);
 
       expect(result).toStrictEqual(expect.any(Array));
     });
 
     it('should throw an error if the category does not exists', async () => {
-      await expect(productService.filterByCategory('category')).rejects.toThrow(
+      const listByCategory: ListByCategory = {
+        category: 'category',
+      };
+      await expect(
+        productService.filterByCategory(listByCategory),
+      ).rejects.toThrow(
         new HttpException(
           'There are no products for this category',
           HttpStatus.NOT_FOUND,
@@ -320,25 +334,35 @@ describe('ProductService', () => {
     });
 
     it('should throw an error if the id from user does not exists', async () => {
+      const likeInput: LikeInput = {
+        like: true,
+      };
       await expect(
-        productService.sendALike(datatype.uuid(), productCreated.id),
+        productService.sendALike(datatype.uuid(), productCreated.id, likeInput),
       ).rejects.toThrow(
         new HttpException('User not found', HttpStatus.NOT_FOUND),
       );
     });
 
     it('should throw an error if the id from product does not exists', async () => {
+      const likeInput: LikeInput = {
+        like: true,
+      };
       await expect(
-        productService.sendALike(userCreated.id, datatype.uuid()),
+        productService.sendALike(userCreated.id, datatype.uuid(), likeInput),
       ).rejects.toThrow(
         new HttpException('Product not found', HttpStatus.NOT_FOUND),
       );
     });
 
     it('should return like if the user and product are valids', async () => {
+      const likeInput: LikeInput = {
+        like: true,
+      };
       const result = await productService.sendALike(
         userCreated.id,
         productCreated.id,
+        likeInput,
       );
 
       expect(result).toBeUndefined();

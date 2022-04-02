@@ -20,6 +20,11 @@ import { Product, User } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
+import { UpdateVisibilityInput } from './dto/input/update-visibility.input';
+import { UpdateProductInput } from './dto/input/update-product.input';
+import { ListByCategory } from './dto/input/list-by-category.input';
+import { LikeInput } from './dto/input/like.input';
+import { ResponseLikeDto } from './dto/response/response-like.dto';
 
 @Controller('product')
 export class ProductController {
@@ -27,15 +32,16 @@ export class ProductController {
 
   @Post()
   @Roles(Role.manager)
-  create(
-    @Body() createProductDto: CreateProductDto,
-  ): Promise<ResponseProductDto> {
+  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
     return this.productService.create(createProductDto);
   }
 
   @Patch(':id')
   @Roles(Role.manager)
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductInput,
+  ) {
     return this.productService.update(id, updateProductDto);
   }
 
@@ -49,12 +55,9 @@ export class ProductController {
   @Roles(Role.manager)
   updateVisibility(
     @Param('id') id: string,
-    @Body() updateVisibilityDto: UpdateVisibilityDto,
+    @Body() updateVisibilityDto: UpdateVisibilityInput,
   ): Promise<ResponseProductDto> {
-    return this.productService.updateVisibility(
-      id,
-      updateVisibilityDto.visible,
-    );
+    return this.productService.updateVisibility(id, updateVisibilityDto);
   }
 
   @Get(':id')
@@ -65,7 +68,9 @@ export class ProductController {
 
   @Get('category/:category')
   @Public()
-  getByCategory(@Param('category') category: string): Promise<Product[]> {
+  getByCategory(
+    @Param('category') category: ListByCategory,
+  ): Promise<Product[]> {
     return this.productService.filterByCategory(category);
   }
 
@@ -83,8 +88,9 @@ export class ProductController {
   likeProduct(
     @GetUser() user: User,
     @Param('id') productId: string,
+    likeInput: LikeInput,
   ): Promise<void> {
-    return this.productService.sendALike(user.id, productId);
+    return this.productService.sendALike(user.id, productId, likeInput);
   }
 
   @Put('/:id/product-image')
@@ -92,6 +98,6 @@ export class ProductController {
   async uploadImage(
     @Param('id') productId: string,
   ): Promise<ResponseProductDto> {
-    return await this.productService.uploadImage(productId /* , imageDto */);
+    return await this.productService.uploadImage(productId);
   }
 }
