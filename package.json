@@ -12,7 +12,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "dotenv -e .env.test -- jest --runInBand",
     "test:watch": "dotenv -e .env.test jest --watch",
@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:migrate:test:save": "dotenv -e .env.test -- prisma migrate dev",
-    "prisma:migrate:test:run": "dotenv -e .env.test -- prisma migrate deploy"
+    "prisma:migrate:test:run": "dotenv -e .env.test -- prisma migrate deploy",
+    "postinstall": "npx prisma generate && npm run build"
   },
   "dependencies": {
     "@nestjs/apollo": "^10.0.8",
