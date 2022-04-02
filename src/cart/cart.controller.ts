@@ -4,6 +4,7 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Roles } from '../auth/role/roles.decorator';
 import { Role } from '../utils/enums';
 import { CartService } from './cart.service';
+import { CartInput } from './dto/input/cart.input';
 
 @Controller('cart')
 export class CartController {
@@ -14,9 +15,9 @@ export class CartController {
   pickProducts(
     @GetUser() user: User,
     @Param('id') productId: string,
-    @Body('quantity') quantity: number,
+    @Body('quantity') cartInput: CartInput,
   ) {
-    return this.cartService.pickProducts(user.id, productId, quantity);
+    return this.cartService.pickProducts(user.id, productId, cartInput);
   }
 
   @Get('/:id')

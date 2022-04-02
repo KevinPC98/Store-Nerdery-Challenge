@@ -8,6 +8,7 @@ import { Role } from '../utils/enums';
 import { hashSync } from 'bcryptjs';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { CartInput } from './dto/input/cart.input';
 
 describe('CartService', () => {
   let cartService: CartService;
@@ -57,30 +58,35 @@ describe('CartService', () => {
     });
 
     it('should throw an error if the product is invalid', async () => {
+      const cartInput: CartInput = {
+        quantity: 5,
+      };
       await expect(
-        cartService.pickProducts(userCreated.id, datatype.uuid(), 5),
+        cartService.pickProducts(userCreated.id, datatype.uuid(), cartInput),
       ).rejects.toThrow(
         new HttpException('Product not found', HttpStatus.NOT_FOUND),
       );
     });
 
     it('should throw an error if the quantity is more than the stock of products', async () => {
+      const cartInput: CartInput = {
+        quantity: productCreated.stock + 1,
+      };
       await expect(
-        cartService.pickProducts(
-          userCreated.id,
-          productCreated.id,
-          productCreated.stock + 1,
-        ),
+        cartService.pickProducts(userCreated.id, productCreated.id, cartInput),
       ).rejects.toThrow(
         new HttpException('Exceeded stock', HttpStatus.NOT_ACCEPTABLE),
       );
     });
 
     it('should return details of cart', async () => {
+      const cartInput: CartInput = {
+        quantity: 1,
+      };
       const result = await cartService.pickProducts(
         userCreated.id,
         productCreated.id,
-        1,
+        cartInput,
       );
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('products');

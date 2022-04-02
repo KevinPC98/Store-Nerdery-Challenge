@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { ProductDetailsDto } from '../product/dto/product-details.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CartDto } from './dto/response/cart.dto';
+import { CartInput } from './dto/input/cart.input';
 
 @Injectable()
 export class CartService {
@@ -11,8 +12,9 @@ export class CartService {
   async pickProducts(
     userId: string,
     productId: string,
-    quantity: number,
+    cartInput: CartInput,
   ): Promise<CartDto> {
+    let quantity = cartInput.quantity;
     const productFound = await this.prisma.product.findUnique({
       where: {
         id: productId,
@@ -28,7 +30,7 @@ export class CartService {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
 
-    if (quantity > productFound.stock) {
+    if (cartInput.quantity > productFound.stock) {
       throw new HttpException('Exceeded stock', HttpStatus.NOT_ACCEPTABLE);
     }
 
