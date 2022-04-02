@@ -30,10 +30,4 @@ export class Product {
 
   @Field((type) => Int)
   stock: number;
-
-  @Field((type) => Like)
-  like: Like;
-
-  @Field((type) => Contain)
-  contain: Contain;
 }

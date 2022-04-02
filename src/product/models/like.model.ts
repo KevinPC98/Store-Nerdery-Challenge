@@ -7,13 +7,12 @@ export class Like {
   @Field()
   id: string;
 
-  @Field((type) => [User], {
-    nullable: 'items',
-  })
+  @Field()
+  like: boolean;
+
+  @Field((type) => [User])
   user: User[];
 
-  @Field((type) => [Product], {
-    nullable: 'items',
-  })
+  @Field((type) => [Product])
   product: Product[];
 }
