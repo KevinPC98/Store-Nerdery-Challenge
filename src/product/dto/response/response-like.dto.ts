@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 @Exclude()
 export class ResponseLikeDto {
@@ -10,4 +10,8 @@ export class ResponseLikeDto {
   @Expose()
   @IsString()
   idProduct: string;
+
+  @Expose()
+  @IsBoolean()
+  like: boolean;
 }
