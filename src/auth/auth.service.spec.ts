@@ -5,8 +5,8 @@ import { name, internet, datatype } from 'faker';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
-import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserService } from '../users/user.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Role } from '../utils/enums';
 
 describe('AuthService', () => {

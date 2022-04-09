@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Request,
-} from '@nestjs/common';
-import { CreateUserDto } from '../user/dto/create-user.dto';
+import { Body, Controller, Post, Query, Request } from '@nestjs/common';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
 import { TokenDto } from './dto/response/token.dto';

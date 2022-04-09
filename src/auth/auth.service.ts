@@ -10,8 +10,8 @@ import { sign, verify } from 'jsonwebtoken';
 import { TokenDto } from './dto/response/token.dto';
 import { Token } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
-import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserService } from '../users/user.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ChangePasswordDto } from './dto/request/password.dto';
 import { hashSync } from 'bcryptjs';
 import * as sgMail from '@sendgrid/mail';
@@ -19,8 +19,8 @@ import * as sgMail from '@sendgrid/mail';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private userService: UserService,
+    private readonly prisma: PrismaService,
+    private readonly userService: UserService,
   ) {}
 
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<TokenDto> {
