@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Role } from '../../utils/enums';
-import { Roles } from '../../auth/role/roles.decorator';
+import { Roles } from '../../auth/guards/roles.decorator';
 import { CartService } from '../cart.service';
 import { Cart } from '../models/cart.model';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
