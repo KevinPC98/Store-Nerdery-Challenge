@@ -13,7 +13,7 @@ import { LikeInput } from '../dto/input/like.input';
 import { GqlJwtGuard } from '../../auth/strategy/gql-jwt.guard';
 import { GqlRolesGuard } from '../../auth/guards/gql-role.guard';
 import { UseGuards } from '@nestjs/common';
-import { GqlGetUser } from '../../auth/guards/gql-get-user.decorator';
+import { GqlGetUser } from '../../auth/decorators/gql-get-user.decorator';
 import { Message } from '../models/message.model';
 
 @Resolver(() => Product)
