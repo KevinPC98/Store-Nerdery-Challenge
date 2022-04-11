@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Role } from '../../utils/enums';
-import { Roles } from '../../auth/guards/roles.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { Product } from '../models/product.model';
 import { ProductService } from '../product.service';
 import { ProductInput } from '../dto/input/create-product.input';
@@ -10,7 +10,7 @@ import { ListByCategory } from '../dto/input/list-by-category.input';
 import { Public } from '../../auth/decorators/public.decorator';
 import { PaginationInput } from '../dto/input/pagination-products.input';
 import { LikeInput } from '../dto/input/like.input';
-import { GqlJwtGuard } from '../../auth/strategy/gql-jwt.guard';
+import { GqlJwtGuard } from '../../auth/guards/gql-jwt.guard';
 import { GqlRolesGuard } from '../../auth/guards/gql-role.guard';
 import { UseGuards } from '@nestjs/common';
 import { GqlGetUser } from '../../auth/decorators/gql-get-user.decorator';

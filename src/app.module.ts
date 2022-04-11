@@ -11,8 +11,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
-import { GqlRolesGuard } from './auth/roles/gql-role.guard';
-import { GqlJwtGuard } from './auth/strategy/gql-jwt.guard';
+import { GqlRolesGuard } from './auth/guards/gql-role.guard';
+import { GqlJwtGuard } from './auth/guards/gql-jwt.guard';
 import { ImagesService } from './images/images.service';
 
 @Module({
