@@ -41,7 +41,7 @@ model Like {
   @@map("likes")
 }
 
-model Contain {
+model Order {
   id        String  @id @default(uuid())
   cartId    String  @map("cart_id")
   cart      Cart    @relation(fields: [cartId], references: [id])
@@ -49,31 +49,31 @@ model Contain {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
 
-  @@map("contain")
+  @@map("Orders")
 }
 
 model Cart {
-  id        String    @id @default(uuid())
-  userId    String    @map("user_id")
-  user      User      @relation(fields: [userId], references: [id])
-  wasBought Boolean   @default(false) @map("was_bought")
-  containts Contain[]
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  user      User    @relation(fields: [userId], references: [id])
+  wasBought Boolean @default(false) @map("was_bought")
+  Orders    Order[]
 
   @@map("carts")
 }
 
 model Product {
-  id          String    @id @default(uuid())
+  id          String   @id @default(uuid())
   description String
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @default(now()) @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
   category    String
   price       Float
   image       String
-  visible     Boolean   @default(true)
+  visible     Boolean  @default(true)
   stock       Int
   likes       Like[]
-  containts   Contain[]
+  Orders      Order[]
 
   @@map("products")
 }
