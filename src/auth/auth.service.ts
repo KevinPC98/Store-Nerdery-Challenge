@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { compareSync } from 'bcryptjs';
-import { sign, verify } from 'jsonwebtoken';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { TokenDto } from './dto/response/token.dto';
 import { Token } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
@@ -14,13 +14,14 @@ import { UserService } from '../users/user.service';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { ChangePasswordDto } from './dto/request/password.dto';
 import { hashSync } from 'bcryptjs';
-import * as sgMail from '@sendgrid/mail';
+import { EmailsService } from 'src/emails/emails.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
+    private readonly emailService: EmailsService,
   ) {}
 
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<TokenDto> {
@@ -104,23 +105,15 @@ export class AuthService {
         id: userId,
       },
     });
-    const tokenSign = this.generateEmailConfirmationToken(userId);
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
-    const msg = {
-      to: user.email as string,
-      from: process.env.SENDGRID_SENDER_EMAIL as string,
-      subject: 'Change Password',
-      text: `Here: http://localhost:3000/auth/change-password?token=${tokenSign}`,
-      html: `<strong>Token: ${tokenSign}</strong>`,
-    };
-    await sgMail.send(msg);
+    const tokenSign = this.emailService.generateEmailConfirmationToken(userId);
+    this.emailService.sendEmail(tokenSign, user.email);
   }
 
   async changePassword(
     token: string,
     changePassword: ChangePasswordDto,
   ): Promise<void> {
-    let sub;
+    let sub: string | JwtPayload;
 
     try {
       ({ sub } = verify(
@@ -133,33 +126,11 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: {
-        id: sub,
+        id: sub.toString(),
       },
       data: {
         password: hashSync(changePassword.newPassword, 10),
       },
     });
-  }
-
-  generateEmailConfirmationToken(userId: string): string {
-    const now = new Date().getTime();
-    const exp = Math.floor(
-      new Date(now).setSeconds(
-        parseInt(
-          process.env.JWT_EMAIL_CONFIRMATION_EXPIRATION_TIME as string,
-          10,
-        ),
-      ) / 1000,
-    );
-    const iat = Math.floor(now / 1000);
-
-    return sign(
-      {
-        sub: userId,
-        iat,
-        exp,
-      },
-      process.env.JWT_EMAIL_CONFIRMATION_SECRET_KEY as string,
-    );
   }
 }

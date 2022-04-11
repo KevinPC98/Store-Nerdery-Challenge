@@ -14,6 +14,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { GqlRolesGuard } from './auth/guards/gql-role.guard';
 import { GqlJwtGuard } from './auth/guards/gql-jwt.guard';
 import { ImagesService } from './images/images.service';
+import { EmailsService } from './emails/emails.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ImagesService } from './images/images.service';
       useClass: GqlRolesGuard,
     },
     ImagesService,
+    EmailsService,
   ],
 })
 export class AppModule {}
