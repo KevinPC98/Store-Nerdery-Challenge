@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Role } from '../../utils/enums';
-import { Roles } from '../../auth/guards/roles.decorator';
+import { Role } from '../../auth/utils/enums';
 import { CartService } from '../cart.service';
 import { Cart } from '../models/cart.model';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { CartInput } from '../dto/input/cart.input';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Resolver(() => Cart)
 export class CartResolver {

@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
-import { Role } from '../utils/enums';
+import { Role } from '../auth/utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UserDto } from './dto/response/user.dto';

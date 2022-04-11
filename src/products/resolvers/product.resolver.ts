@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Role } from '../../utils/enums';
+import { Role } from '../../auth/utils/enums';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Product } from '../models/product.model';
 import { ProductService } from '../product.service';

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product, User } from '@prisma/client';
 import { commerce, datatype, internet, lorem, name } from 'faker';
-import { Role } from '../utils/enums';
+import { Role } from '../auth/utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { UpdateProductDto } from './dto/request/update-product.dto';

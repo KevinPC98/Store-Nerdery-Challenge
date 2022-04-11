@@ -11,8 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { Role } from 'src/utils/enums';
+import { Role } from 'src/auth/utils/enums';
 import { ResponseProductDto } from './dto/response/response-product.dto';
 import { Product, User } from '@prisma/client';
 import { ListProductsPaginationDto } from './dto/response/list-products-pagination.dto';
@@ -22,6 +21,7 @@ import { UpdateVisibilityInput } from './dto/input/update-visibility.input';
 import { UpdateProductInput } from './dto/input/update-product.input';
 import { ListByCategory } from './dto/input/list-by-category.input';
 import { LikeInput } from './dto/input/like.input';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('product')
 export class ProductController {

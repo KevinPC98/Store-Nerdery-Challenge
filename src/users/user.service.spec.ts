@@ -7,7 +7,7 @@ import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UserService } from './user.service';
-import { Role } from '../utils/enums';
+import { Role } from '../auth/utils/enums';
 
 describe('UserService', () => {
   let prisma: PrismaService;

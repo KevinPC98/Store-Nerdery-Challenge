@@ -1,6 +1,6 @@
 import { Expose, Exclude } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from 'class-validator';
-import { Role } from 'src/utils/enums';
+import { Role } from 'src/auth/utils/enums';
 
 @Exclude()
 export class CreateUserDto {

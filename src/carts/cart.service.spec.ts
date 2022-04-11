@@ -4,7 +4,7 @@ import { CreateProductDto } from '../products/dto/request/create-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CartService } from './cart.service';
 import { commerce, datatype, internet, lorem, name } from 'faker';
-import { Role } from '../utils/enums';
+import { Role } from '../auth/utils/enums';
 import { hashSync } from 'bcryptjs';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
