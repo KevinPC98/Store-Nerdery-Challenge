@@ -5,9 +5,17 @@ import { IsEmail, IsString } from 'class-validator';
 export class UserDto {
   @Expose()
   @IsString()
+  readonly id: string;
+
+  @Expose()
+  @IsString()
   readonly name: string;
 
   @Expose()
   @IsEmail()
   readonly email: string;
+
+  @Expose()
+  @IsString()
+  readonly password: string;
 }

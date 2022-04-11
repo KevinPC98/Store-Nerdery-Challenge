@@ -10,12 +10,8 @@ import { plainToInstance } from 'class-transformer';
 export class UserService {
   constructor(private prisma: PrismaService) {}
   async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    const userFound = await this.prisma.user.findUnique({
-      where: {
-        email: createUserDto.email,
-      },
-      rejectOnNotFound: false,
-    });
+    const userFound = await this.findByEmail(createUserDto.email);
+
     if (userFound) {
       throw new ConflictException('Email does not valid');
     }
@@ -28,6 +24,21 @@ export class UserService {
         role: Role.client,
       },
     });
+
+    return plainToInstance(UserDto, user);
+  }
+
+  async findByEmail(email: string): Promise<UserDto> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      rejectOnNotFound: false,
+    });
+
+    if (user!) {
+      throw new ConflictException('Email does not valid');
+    }
 
     return plainToInstance(UserDto, user);
   }

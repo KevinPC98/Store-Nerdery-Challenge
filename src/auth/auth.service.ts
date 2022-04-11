@@ -114,9 +114,6 @@ export class AuthService {
       html: `<strong>Token: ${tokenSign}</strong>`,
     };
     await sgMail.send(msg);
-    console.log(
-      `Here: http://localhost:3000/auth/change-password?token=${tokenSign}`,
-    );
   }
 
   async changePassword(
@@ -134,16 +131,14 @@ export class AuthService {
       throw new UnprocessableEntityException('Invalid Token');
     }
 
-    const userId = sub;
-    const userUpdated = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: {
-        id: userId,
+        id: sub,
       },
       data: {
         password: hashSync(changePassword.newPassword, 10),
       },
     });
-    console.log(userUpdated);
   }
 
   generateEmailConfirmationToken(userId: string): string {
