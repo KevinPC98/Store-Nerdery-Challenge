@@ -5,7 +5,7 @@ import { hashSync } from 'bcryptjs';
 import { name, internet } from 'faker';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { UserService } from './user.service';
 import { Role } from '../utils/enums';
 

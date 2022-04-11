@@ -1,16 +1,21 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { hashSync } from 'bcryptjs';
 import { Role } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/request/create-user.dto';
+import { UserDto } from './dto/response/user.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const userFound = await this.findByEmail(createUserDto.email);
-
+  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
+    const userFound = await this.prisma.user.findUnique({
+      where: {
+        email: createUserDto.email,
+      },
+      rejectOnNotFound: false,
+    });
     if (userFound) {
       throw new ConflictException('Email does not valid');
     }
@@ -24,17 +29,6 @@ export class UserService {
       },
     });
 
-    return user;
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-      rejectOnNotFound: false,
-    });
-
-    return user;
+    return plainToInstance(UserDto, user);
   }
 }

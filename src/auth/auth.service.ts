@@ -11,7 +11,7 @@ import { TokenDto } from './dto/response/token.dto';
 import { Token } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/request/auth-credentials.dto';
 import { UserService } from '../users/user.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { ChangePasswordDto } from './dto/request/password.dto';
 import { hashSync } from 'bcryptjs';
 import * as sgMail from '@sendgrid/mail';

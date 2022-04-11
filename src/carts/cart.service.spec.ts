@@ -6,7 +6,7 @@ import { CartService } from './cart.service';
 import { commerce, datatype, internet, lorem, name } from 'faker';
 import { Role } from '../utils/enums';
 import { hashSync } from 'bcryptjs';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CartInput } from './dto/input/cart.input';
 
